@@ -1,0 +1,5 @@
+language: java
+script:
+ - mvn integration-test -P integration
+after_success:
+ - mvn jacoco:report coveralls:report
