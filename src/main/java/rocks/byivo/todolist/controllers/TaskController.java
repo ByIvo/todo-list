@@ -1,5 +1,6 @@
 package rocks.byivo.todolist.controllers;
 
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -54,6 +55,12 @@ public class TaskController {
 	return allExistingsTasks.stream()
 		.map(Task::toTransferObject)
 		.collect(Collectors.toList());
+    }
+    
+    @RequestMapping(value="/{taskId}", method=DELETE)
+    public ResponseEntity<TaskDTO> removeTaskById(@PathVariable(name="taskId", required=true) Long taskId) {
+	Task foundTask = taskService.deleteById(taskId);
+	return new ResponseEntity<>(foundTask.toTransferObject(), HttpStatus.OK);
     }
 
 }

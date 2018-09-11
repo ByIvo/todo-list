@@ -16,13 +16,16 @@ public class FakeRepository implements TaskRepository {
 
     private Map<Long, Task> tasks;
     
+    private long idCounter;
+    
     public FakeRepository() {
 	tasks = new HashMap<>();
+	idCounter = 0;
     }
     
     @Override
     public Task create(Task newTask) {
-	long idTask = 1L;
+	long idTask = setupId(newTask);
 	
 	newTask.setIdTask(idTask);
 	tasks.put(idTask, newTask);
@@ -30,17 +33,50 @@ public class FakeRepository implements TaskRepository {
 	return newTask;
     }
 
+    private long setupId(Task newTask) {
+	if(newTask.hasId()) {
+	    return setIdCountToBeAtLeastActualId(newTask);
+	} else {
+	    return ++idCounter;
+	}
+    }
+
+    private Long setIdCountToBeAtLeastActualId(Task newTask) {
+	Long idTask = newTask.getIdTask();
+	
+	if(idTask > idCounter) {
+	idCounter = idTask;
+	}
+	
+	return idTask;
+    }
+
     @Override
-    public Task findById(long taskId) {
+    public Task findById(Long taskId) {
+	validateExistanceOf(taskId);
+	return tasks.get(taskId);
+    }
+
+    private void validateExistanceOf(Long taskId) {
 	if(!tasks.containsKey(taskId)) {
 	    throw new TaskNotFoundException(taskId);
 	}
-	return tasks.get(taskId);
     }
 
     @Override
     public List<Task> queryAll() {
 	return new ArrayList<>(tasks.values());
+    }
+
+    @Override
+    public Task deleteById(Long taskId) {
+	validateExistanceOf(taskId);
+	return tasks.remove(taskId);
+    }
+
+    @Override
+    public void removeAll() {
+	tasks.clear();
     }
 
 }

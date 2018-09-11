@@ -1,7 +1,7 @@
 package rocks.byivo.todolist.services.impl;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -159,6 +159,23 @@ public class TaskServiceImplTest {
 	
 	List<Task> allExistingTasks = taskService.queryAll();
 	assertThat(allExistingTasks, is(expectedExistingTasks));
+    }
+    
+    @Test
+    public void shouldDeleteInRepositoryWithProvidedId() throws Exception {
+	long taskId = 1L;
+	taskService.deleteById(taskId);
+	verify(taskRepository).deleteById(taskId);
+    }
+    
+    @Test
+    public void shouldReturnTheDeletedTaskInRepository() throws Exception {
+	long taskId = 1L;
+	Task expectedDeletedTask = mock(Task.class);
+	doReturn(expectedDeletedTask).when(taskRepository).deleteById(taskId);
+	
+	Task deletedTask = taskService.deleteById(taskId);
+	assertThat(deletedTask, is(expectedDeletedTask));
     }
 
 }

@@ -51,4 +51,9 @@ public class TaskServiceImpl implements TaskService {
 	return taskRepository.queryAll();
     }
 
+    @Override
+    public Task deleteById(Long taskId) {
+	return taskRepository.deleteById(taskId);
+    }
+
 }

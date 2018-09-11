@@ -66,6 +66,10 @@ public class Task {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+    
+    public boolean hasId() {
+	return idTask != null;
+    }
 
     public TaskDTO toTransferObject() {
 	TaskDTO taskDTO = new TaskDTO();
