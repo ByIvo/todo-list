@@ -56,5 +56,29 @@ public class TaskControllerIT {
 		.body("status", equalTo(TaskStatus.TO_DO.name()))
 		.body("readableStatus", equalTo(TaskStatus.TO_DO.toString()));
     }
+    
+    @Test
+    public void 
+    should_retrieve_a_task_using_its_identifier() throws Exception {
+	 given()
+        	.basePath(TASKS_PATH)
+        .when()
+        	.get("/1")
+        .then()
+        	.statusCode(200)
+        	.body("idTask", equalTo(1));
+    }
+    
+    @Test
+    public void 
+    should_get_a_404_when_retrieve_a_non_existing_task() throws Exception {
+	 given()
+        	.basePath(TASKS_PATH)
+        .when()
+        	.get("/2")
+        .then()
+        	.statusCode(404)
+        	.body("message", equalTo("It was no possible to find a Task identified by 2"));
+    }
 
 }

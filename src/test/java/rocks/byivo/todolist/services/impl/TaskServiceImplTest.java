@@ -125,5 +125,23 @@ public class TaskServiceImplTest {
 
 	};
     }
+    
+    @Test
+    public void shouldFindByIdentifierTheTaskInRepository() throws Exception {
+	long taskId = 1L;
+	
+	taskService.findById(taskId);
+	verify(taskRepository).findById(taskId);
+    }
+    
+    @Test
+    public void shouldReturnTheValueFoundInRepository() throws Exception {
+	long taskId = 1L;
+	Task expectedTask = mock(Task.class);
+	doReturn(expectedTask).when(taskRepository).findById(taskId);
+	
+	Task foundTask = taskService.findById(taskId);
+	assertThat(foundTask, is(expectedTask));
+    }
 
 }

@@ -6,4 +6,6 @@ import rocks.byivo.todolist.model.Task;
 public interface TaskService {
 
     Task createTaskFrom(TaskDTO taskFromClient);
+
+    Task findById(Long taskId);
 }

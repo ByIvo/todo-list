@@ -40,4 +40,9 @@ public class TaskServiceImpl implements TaskService {
 		.build();
     }
 
+    @Override
+    public Task findById(Long taskId) {
+	return taskRepository.findById(taskId);
+    }
+
 }
