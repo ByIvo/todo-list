@@ -2,6 +2,9 @@ package rocks.byivo.todolist.controllers;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static rocks.byivo.todolist.ContextPathConfig.BASE_PATH;
 
 import org.junit.Before;
@@ -80,5 +83,18 @@ public class TaskControllerIT {
         	.statusCode(404)
         	.body("message", equalTo("It was no possible to find a Task identified by 2"));
     }
+
+    @Test
+    public void 
+    should_query_all_existing_tasks() throws Exception {
+	given()
+        	.basePath(TASKS_PATH)
+        .when()
+        	.get()
+        .then()
+        	.statusCode(200)
+        	.body("$", hasSize(1));
+    }
+    
 
 }

@@ -1,6 +1,7 @@
 package rocks.byivo.todolist.services.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task findById(Long taskId) {
 	return taskRepository.findById(taskId);
+    }
+
+    @Override
+    public List<Task> queryAll() {
+	return taskRepository.queryAll();
     }
 
 }

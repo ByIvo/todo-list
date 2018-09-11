@@ -6,7 +6,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -142,6 +144,21 @@ public class TaskServiceImplTest {
 	
 	Task foundTask = taskService.findById(taskId);
 	assertThat(foundTask, is(expectedTask));
+    }
+    
+    @Test
+    public void shouldQueryAllExistingTasksInRepository() throws Exception {
+	taskService.queryAll();
+	verify(taskRepository).queryAll();
+    }
+    
+    @Test
+    public void shouldReturnTheSameTasksAsRepository() throws Exception {
+	List<Task> expectedExistingTasks = Arrays.asList(mock(Task.class));
+	doReturn(expectedExistingTasks).when(taskRepository).queryAll();
+	
+	List<Task> allExistingTasks = taskService.queryAll();
+	assertThat(allExistingTasks, is(expectedExistingTasks));
     }
 
 }

@@ -1,6 +1,8 @@
 package rocks.byivo.todolist.repositories.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
@@ -34,6 +36,11 @@ public class FakeRepository implements TaskRepository {
 	    throw new TaskNotFoundException(taskId);
 	}
 	return tasks.get(taskId);
+    }
+
+    @Override
+    public List<Task> queryAll() {
+	return new ArrayList<>(tasks.values());
     }
 
 }

@@ -1,6 +1,10 @@
 package rocks.byivo.todolist.controllers;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,10 +35,25 @@ public class TaskController {
 	return new ResponseEntity<>(createdTask.toTransferObject(), HttpStatus.CREATED);
     }
     
-    @RequestMapping(value="/{taskId}")
+    @RequestMapping(value="/{taskId}", method=GET)
     public ResponseEntity<TaskDTO> getById(@PathVariable(name="taskId", required=true) Long taskId) {
 	Task foundTask = taskService.findById(taskId);
 	return new ResponseEntity<>(foundTask.toTransferObject(), HttpStatus.OK);
+    }
+    
+    @RequestMapping(method=GET)
+    public ResponseEntity<List<TaskDTO>> queryAll() {
+	List<Task> allExistingsTasks = taskService.queryAll();
+	
+	List<TaskDTO> allTaksAsDTO = convertToTransferObjects(allExistingsTasks);
+	
+	return new ResponseEntity<>(allTaksAsDTO, HttpStatus.OK);
+    }
+
+    private List<TaskDTO> convertToTransferObjects(List<Task> allExistingsTasks) {
+	return allExistingsTasks.stream()
+		.map(Task::toTransferObject)
+		.collect(Collectors.toList());
     }
 
 }
