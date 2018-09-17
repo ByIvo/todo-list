@@ -7,6 +7,8 @@ import rocks.byivo.todolist.model.Task;
 public interface TaskRepository {
 
     Task create(Task newTask);
+    
+    void update(Task taskToMerge);
 
     Task findById(Long taskId);
 

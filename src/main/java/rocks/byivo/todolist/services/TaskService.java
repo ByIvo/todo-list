@@ -4,6 +4,7 @@ import java.util.List;
 
 import rocks.byivo.todolist.dto.TaskDTO;
 import rocks.byivo.todolist.model.Task;
+import rocks.byivo.todolist.model.TaskStatus;
 
 public interface TaskService {
 
@@ -14,4 +15,6 @@ public interface TaskService {
     List<Task> queryAll();
 
     Task deleteById(Long taskId);
+    
+    void moveToStatus(Task taskToBeChanged, TaskStatus newTaskStatus);
 }

@@ -79,4 +79,10 @@ public class FakeRepository implements TaskRepository {
 	tasks.clear();
     }
 
+    @Override
+    public void update(Task taskToMerge) {
+	this.deleteById(taskToMerge.getIdTask());
+	this.create(taskToMerge);
+    }
+
 }

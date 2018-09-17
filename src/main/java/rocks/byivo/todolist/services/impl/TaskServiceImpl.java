@@ -56,4 +56,10 @@ public class TaskServiceImpl implements TaskService {
 	return taskRepository.deleteById(taskId);
     }
 
+    @Override
+    public void moveToStatus(Task taskToBeChanged, TaskStatus newStatus) {
+	taskToBeChanged.setStatus(newStatus);
+	taskRepository.update(taskToBeChanged);
+    }
+
 }

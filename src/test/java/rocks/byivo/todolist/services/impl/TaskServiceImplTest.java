@@ -177,5 +177,21 @@ public class TaskServiceImplTest {
 	Task deletedTask = taskService.deleteById(taskId);
 	assertThat(deletedTask, is(expectedDeletedTask));
     }
+    
+    @Test
+    public void shouldChangeTheStatusInRequiredTaskToDesiredNewStatus() throws Exception {
+	Task taskToBeChanged = mock(Task.class);
+	
+	taskService.moveToStatus(taskToBeChanged, TaskStatus.DOING);
+	verify(taskToBeChanged).setStatus(TaskStatus.DOING);
+    }
+    
+    @Test
+    public void shouldPersistTheTaskWithNewStatusWhenItChanges() throws Exception {
+	Task taskToBeChanged = mock(Task.class);
+	
+	taskService.moveToStatus(taskToBeChanged, TaskStatus.DOING);
+	verify(taskRepository).update(taskToBeChanged);
+    }
 
 }

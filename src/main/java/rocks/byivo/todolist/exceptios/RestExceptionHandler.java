@@ -1,4 +1,4 @@
-package rocks.byivo.todolist.controllers;
+package rocks.byivo.todolist.exceptios;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import rocks.byivo.todolist.dto.ErrorDTO;
-import rocks.byivo.todolist.exceptios.TaskNotFoundException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice

@@ -6,14 +6,10 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static rocks.byivo.todolist.ContextPathConfig.BASE_PATH;
 
-import java.util.Date;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -23,6 +19,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import rocks.byivo.todolist.builders.TaskBuilder;
 import rocks.byivo.todolist.dto.TaskDTO;
+import rocks.byivo.todolist.factory.TaskFixture;
 import rocks.byivo.todolist.model.Task;
 import rocks.byivo.todolist.model.TaskStatus;
 import rocks.byivo.todolist.repositories.TaskRepository;
@@ -53,13 +50,10 @@ public class TaskControllerIT {
     }
 
     private void preTaskInsert() {
-	Task newTask = new TaskBuilder()
+	Task newTask = TaskFixture.newTodoTask()
 		.withIdTask(1l)
 		.withTitle(FAKE_TITLE)
 		.withDescription(RANDOM_DESCRIPTION)
-		.withStatus(TaskStatus.TO_DO)
-		.withCreatedAt(new Date())
-		.withUpdatedAt(new Date())
 		.build();
 	
 	taskRepository.create(newTask);
@@ -110,7 +104,7 @@ public class TaskControllerIT {
         	.get("/2")
         .then()
         	.statusCode(404)
-        	.body("message", equalTo("It was no possible to find a Task identified by 2"));
+        	.body("message", equalTo("It was not possible to find a Task identified by 2"));
     }
 
     @Test
@@ -147,7 +141,7 @@ public class TaskControllerIT {
         	.get("/2")
         .then()
         	.statusCode(404)
-        	.body("message", equalTo("It was no possible to find a Task identified by 2"));
+        	.body("message", equalTo("It was not possible to find a Task identified by 2"));
     }
 
 }
