@@ -116,14 +116,17 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>		
+ 					<forkCount>3</forkCount>		
+ 					<reuseForks>true</reuseForks>		
+ 					<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>		
+ 				</configuration>
 				<executions>
 					<execution>
 						<id>integration-test</id>
 						<goals>
 							<goal>integration-test</goal>
-							<goal>verify</goal>
 						</goals>
 						<configuration>
 							<skipTests>${integration-tests.skip}</skipTests>
@@ -133,13 +136,6 @@
 						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<environmentVariables>
-						<forkCount>3</forkCount>
-						<reuseForks>true</reuseForks>
-						<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-					</environmentVariables>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
