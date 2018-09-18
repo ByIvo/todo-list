@@ -4,3 +4,4 @@ target/*
 .project
 /target/
 /bin/
+.DS_STORE

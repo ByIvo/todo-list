@@ -9,13 +9,8 @@ import static rocks.byivo.todolist.ContextPathConfig.BASE_PATH;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import rocks.byivo.todolist.builders.TaskBuilder;
 import rocks.byivo.todolist.dto.TaskDTO;
@@ -24,29 +19,26 @@ import rocks.byivo.todolist.model.Task;
 import rocks.byivo.todolist.model.TaskStatus;
 import rocks.byivo.todolist.repositories.TaskRepository;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TaskControllerIT {
+
+public class TaskControllerIT extends DefaultIntegrationTestRunner {
     
     private static final String RANDOM_DESCRIPTION = "A random description";
     private static final String FAKE_TITLE = "Fake Title";
     private static final String TASKS_PATH = BASE_PATH +"/tasks";
     
-    @LocalServerPort
-    int port;
+    private Integer generatedId;
     
     @Autowired
     private TaskRepository taskRepository;
     
     @Before
     public void setUp() throws Exception {
-	RestAssured.port = port;
 	preTaskInsert();
     }
     
     @After
     public void tearDown() {
-	taskRepository.removeAll();
+	taskRepository.deleteAll();
     }
 
     private void preTaskInsert() {
@@ -56,7 +48,8 @@ public class TaskControllerIT {
 		.withDescription(RANDOM_DESCRIPTION)
 		.build();
 	
-	taskRepository.create(newTask);
+	Task persistedTask = taskRepository.save(newTask);
+	generatedId = persistedTask.getIdTask().intValue();
     }
     
     @Test
@@ -89,22 +82,23 @@ public class TaskControllerIT {
 	 given()
         	.basePath(TASKS_PATH)
         .when()
-        	.get("/1")
+        	.get(generatedId + "")
         .then()
         	.statusCode(200)
-        	.body("idTask", equalTo(1));
+        	.body("idTask", equalTo(generatedId));
     }
     
     @Test
     public void 
     should_get_a_404_when_retrieve_a_non_existing_task() throws Exception {
-	 given()
+	 int nonExistingId = generatedId + 1;
+	given()
         	.basePath(TASKS_PATH)
         .when()
-        	.get("/2")
+        	.get(nonExistingId + "")
         .then()
         	.statusCode(404)
-        	.body("message", equalTo("It was not possible to find a Task identified by 2"));
+        	.body("message", equalTo("It was not possible to find a Task identified by " + nonExistingId));
     }
 
     @Test
@@ -125,23 +119,22 @@ public class TaskControllerIT {
 	given()
         	.basePath(TASKS_PATH)
         .when()
-        	.delete("/1")
+        	.delete(generatedId + "")
         .then()
-        	.statusCode(200)
-        	.body("title", equalTo(FAKE_TITLE))
-		.body("description", equalTo(RANDOM_DESCRIPTION));
+        	.statusCode(200);
     }
     
     @Test
     public void 
     should_get_a_404_when_delete_a_non_existing_task() throws Exception {
-	 given()
+	int nonExistingId = generatedId + 1;
+	given()
         	.basePath(TASKS_PATH)
         .when()
-        	.get("/2")
+        	.get(nonExistingId + "")
         .then()
         	.statusCode(404)
-        	.body("message", equalTo("It was not possible to find a Task identified by 2"));
+        	.body("message", equalTo("It was not possible to find a Task identified by " + nonExistingId));
     }
 
 }

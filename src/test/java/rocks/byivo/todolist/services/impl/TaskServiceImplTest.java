@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -22,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import rocks.byivo.todolist.builders.TaskBuilder;
 import rocks.byivo.todolist.dto.TaskDTO;
+import rocks.byivo.todolist.exceptios.TaskNotFoundException;
 import rocks.byivo.todolist.model.Task;
 import rocks.byivo.todolist.model.TaskStatus;
 import rocks.byivo.todolist.repositories.TaskRepository;
@@ -82,7 +84,7 @@ public class TaskServiceImplTest {
 	TaskDTO newTaskFromClient = setupNewTaskFromClient();
 	
 	Task expectedTask = mock(Task.class);
-	doReturn(expectedTask).when(taskRepository).create(Mockito.any());
+	doReturn(expectedTask).when(taskRepository).save(Mockito.any());
 	
 	Task createdTask = taskService.createTaskFrom(newTaskFromClient);
 	
@@ -100,7 +102,7 @@ public class TaskServiceImplTest {
 
     private Task captureTaskProvidedInRepository() {
 	ArgumentCaptor<Task> newTaskCaptor = ArgumentCaptor.forClass(Task.class);
-	verify(taskRepository).create(newTaskCaptor.capture());
+	verify(taskRepository).save(newTaskCaptor.capture());
 	
 	Task taskToBeCreated = newTaskCaptor.getValue();
 	return taskToBeCreated;
@@ -132,6 +134,7 @@ public class TaskServiceImplTest {
     public void shouldFindByIdentifierTheTaskInRepository() throws Exception {
 	long taskId = 1L;
 	
+	doReturn(Optional.of(mock(Task.class))).when(taskRepository).findById(taskId);
 	taskService.findById(taskId);
 	verify(taskRepository).findById(taskId);
     }
@@ -140,22 +143,30 @@ public class TaskServiceImplTest {
     public void shouldReturnTheValueFoundInRepository() throws Exception {
 	long taskId = 1L;
 	Task expectedTask = mock(Task.class);
-	doReturn(expectedTask).when(taskRepository).findById(taskId);
+	doReturn(Optional.of(expectedTask)).when(taskRepository).findById(taskId);
 	
 	Task foundTask = taskService.findById(taskId);
 	assertThat(foundTask, is(expectedTask));
     }
     
+    @Test(expected=TaskNotFoundException.class)
+    public void shouldThrowAnErrorWhenTheIdDoesNotExist() throws Exception {
+	long taskId = 1L;
+	doReturn(Optional.empty()).when(taskRepository).findById(taskId);
+	
+	taskService.findById(taskId);
+    }
+    
     @Test
     public void shouldQueryAllExistingTasksInRepository() throws Exception {
 	taskService.queryAll();
-	verify(taskRepository).queryAll();
+	verify(taskRepository).findAll();
     }
     
     @Test
     public void shouldReturnTheSameTasksAsRepository() throws Exception {
 	List<Task> expectedExistingTasks = Arrays.asList(mock(Task.class));
-	doReturn(expectedExistingTasks).when(taskRepository).queryAll();
+	doReturn(expectedExistingTasks).when(taskRepository).findAll();
 	
 	List<Task> allExistingTasks = taskService.queryAll();
 	assertThat(allExistingTasks, is(expectedExistingTasks));
@@ -166,16 +177,6 @@ public class TaskServiceImplTest {
 	long taskId = 1L;
 	taskService.deleteById(taskId);
 	verify(taskRepository).deleteById(taskId);
-    }
-    
-    @Test
-    public void shouldReturnTheDeletedTaskInRepository() throws Exception {
-	long taskId = 1L;
-	Task expectedDeletedTask = mock(Task.class);
-	doReturn(expectedDeletedTask).when(taskRepository).deleteById(taskId);
-	
-	Task deletedTask = taskService.deleteById(taskId);
-	assertThat(deletedTask, is(expectedDeletedTask));
     }
     
     @Test
@@ -191,7 +192,7 @@ public class TaskServiceImplTest {
 	Task taskToBeChanged = mock(Task.class);
 	
 	taskService.moveToStatus(taskToBeChanged, TaskStatus.DOING);
-	verify(taskRepository).update(taskToBeChanged);
+	verify(taskRepository).save(taskToBeChanged);
     }
 
 }

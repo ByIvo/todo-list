@@ -14,7 +14,7 @@ public interface TaskService {
 
     List<Task> queryAll();
 
-    Task deleteById(Long taskId);
+    void deleteById(Long taskId);
     
     void moveToStatus(Task taskToBeChanged, TaskStatus newTaskStatus);
 }

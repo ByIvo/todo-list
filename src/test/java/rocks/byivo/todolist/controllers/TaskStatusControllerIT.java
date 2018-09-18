@@ -9,42 +9,30 @@ import static rocks.byivo.todolist.factory.TaskFixture.newTodoTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import io.restassured.RestAssured;
 import rocks.byivo.todolist.model.TaskStatus;
 import rocks.byivo.todolist.repositories.TaskRepository;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class TaskStatusControllerIT {
+public class TaskStatusControllerIT extends DefaultIntegrationTestRunner {
 
-    private static final Long TODO_TASK_ID = 1L;
-    private static final Long DOING_TASK_ID = 2L;
+    private Integer todoTaskId;
+    private Integer doingTaskId;
 
     private static final String TASKS_PATH = BASE_PATH +"/tasks";
-    
-    @LocalServerPort
-    int port;
     
     @Autowired
     private TaskRepository taskRepository;
     
     @Before
     public void setUp() throws Exception {
-	RestAssured.port = port;
-	
-	taskRepository.create(newTodoTask().withIdTask(TODO_TASK_ID).build());
-	taskRepository.create(newDoingTask().withIdTask(DOING_TASK_ID).build());
+	todoTaskId = taskRepository.save(newTodoTask().build()).getIdTask().intValue();
+	doingTaskId = taskRepository.save(newDoingTask().build()).getIdTask().intValue();
     }
     
     @After
     public void tearDown() {
-	taskRepository.removeAll();
+	taskRepository.deleteAll();
     }
 
     @Test
@@ -53,10 +41,10 @@ public class TaskStatusControllerIT {
 	given()
 		.basePath(TASKS_PATH)
 	.when()
-		.put(TODO_TASK_ID + "/start")
+		.put(todoTaskId + "/start")
 	.then()
 		.statusCode(200)
-		.body("idTask", equalTo(TODO_TASK_ID.intValue()))
+		.body("idTask", equalTo(todoTaskId.intValue()))
 		.body("readableStatus", equalTo(TaskStatus.DOING.toString()))
 		.body("status", equalTo(TaskStatus.DOING.name()));
     }
@@ -66,10 +54,10 @@ public class TaskStatusControllerIT {
 	given()
         	.basePath(TASKS_PATH)
         .when()
-        	.put(DOING_TASK_ID + "/complete")
+        	.put(doingTaskId + "/complete")
         .then()
         	.statusCode(200)
-        	.body("idTask", equalTo(DOING_TASK_ID.intValue()))
+        	.body("idTask", equalTo(doingTaskId.intValue()))
         	.body("readableStatus", equalTo(TaskStatus.DONE.toString()))
         	.body("status", equalTo(TaskStatus.DONE.name()));
     }
@@ -79,10 +67,10 @@ public class TaskStatusControllerIT {
 	given()
         	.basePath(TASKS_PATH)
         .when()
-        	.put(DOING_TASK_ID + "/reset")
+        	.put(doingTaskId + "/reset")
         .then()
         	.statusCode(200)
-        	.body("idTask", equalTo(DOING_TASK_ID.intValue()))
+        	.body("idTask", equalTo(doingTaskId.intValue()))
         	.body("readableStatus", equalTo(TaskStatus.TO_DO.toString()))
         	.body("status", equalTo(TaskStatus.TO_DO.name()));
     }

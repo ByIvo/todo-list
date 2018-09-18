@@ -59,8 +59,8 @@ public class TaskController {
     
     @RequestMapping(value="/{taskId}", method=DELETE)
     public ResponseEntity<TaskDTO> removeTaskById(@PathVariable(name="taskId", required=true) Long taskId) {
-	Task foundTask = taskService.deleteById(taskId);
-	return new ResponseEntity<>(foundTask.toTransferObject(), HttpStatus.OK);
+	taskService.deleteById(taskId);
+	return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -2,12 +2,13 @@ package rocks.byivo.todolist.services.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import rocks.byivo.todolist.builders.TaskBuilder;
 import rocks.byivo.todolist.dto.TaskDTO;
+import rocks.byivo.todolist.exceptios.TaskNotFoundException;
 import rocks.byivo.todolist.model.Task;
 import rocks.byivo.todolist.model.TaskStatus;
 import rocks.byivo.todolist.repositories.TaskRepository;
@@ -18,7 +19,6 @@ public class TaskServiceImpl implements TaskService {
 
     private TaskRepository taskRepository;
     
-    @Autowired
     public TaskServiceImpl(TaskRepository taskRepository) {
 	this.taskRepository = taskRepository;
     }
@@ -26,7 +26,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task createTaskFrom(TaskDTO taskFromClient) {
 	Task taskToBeCreated = createTaskWithInfoFrom(taskFromClient);
-	return taskRepository.create(taskToBeCreated);
+	return taskRepository.save(taskToBeCreated);
     }
 
     private Task createTaskWithInfoFrom(TaskDTO taskFromClient) {
@@ -43,23 +43,28 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task findById(Long taskId) {
-	return taskRepository.findById(taskId);
+	Optional<Task> foundTask = taskRepository.findById(taskId);
+	if(foundTask.isPresent()) {
+	    return foundTask.get();
+	} else {
+	    throw new TaskNotFoundException(taskId);
+	}
     }
 
     @Override
     public List<Task> queryAll() {
-	return taskRepository.queryAll();
+	return taskRepository.findAll();
     }
 
     @Override
-    public Task deleteById(Long taskId) {
-	return taskRepository.deleteById(taskId);
+    public void deleteById(Long taskId) {
+	taskRepository.deleteById(taskId);
     }
 
     @Override
     public void moveToStatus(Task taskToBeChanged, TaskStatus newStatus) {
 	taskToBeChanged.setStatus(newStatus);
-	taskRepository.update(taskToBeChanged);
+	taskRepository.save(taskToBeChanged);
     }
 
 }

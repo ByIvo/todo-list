@@ -11,8 +11,8 @@ import rocks.byivo.todolist.exceptios.TaskNotFoundException;
 import rocks.byivo.todolist.model.Task;
 import rocks.byivo.todolist.repositories.TaskRepository;
 
-@Repository
-public class FakeRepository implements TaskRepository {
+//@Repository
+public class FakeRepository {//implements TaskRepository {
 
     private Map<Long, Task> tasks;
     
@@ -23,7 +23,7 @@ public class FakeRepository implements TaskRepository {
 	idCounter = 0;
     }
     
-    @Override
+//    @Override
     public Task create(Task newTask) {
 	long idTask = setupId(newTask);
 	
@@ -51,7 +51,7 @@ public class FakeRepository implements TaskRepository {
 	return idTask;
     }
 
-    @Override
+//    @Override
     public Task findById(Long taskId) {
 	validateExistanceOf(taskId);
 	return tasks.get(taskId);
@@ -63,23 +63,23 @@ public class FakeRepository implements TaskRepository {
 	}
     }
 
-    @Override
+//    @Override
     public List<Task> queryAll() {
 	return new ArrayList<>(tasks.values());
     }
 
-    @Override
+//    @Override
     public Task deleteById(Long taskId) {
 	validateExistanceOf(taskId);
 	return tasks.remove(taskId);
     }
 
-    @Override
+//    @Override
     public void removeAll() {
 	tasks.clear();
     }
 
-    @Override
+//    @Override
     public void update(Task taskToMerge) {
 	this.deleteById(taskToMerge.getIdTask());
 	this.create(taskToMerge);
